@@ -96,6 +96,30 @@ class ChallengePHP
 			}
 		}
 	}
+
+	function get_data_gabungkan()
+	{
+		$data1 = file_get_contents("https://jsonplaceholder.typicode.com/posts");
+		$data1 = json_decode($data1, true);
+		$data2 = file_get_contents("https://jsonplaceholder.typicode.com/users");
+		$data2 = json_decode($data2, true);
+
+		for ($i=0; $i < count($data1); $i++) 
+		{ 
+			foreach ($data1 as $post) 
+			{
+				foreach ($data2 as $users) 
+				{
+					if ($post["userId"] == $users["id"]) 
+					{
+						print_r($data2[$i]);
+					}
+				}
+			}
+		}
+		// $data1 = json_encode($data1, JSON_PRETTY_PRINT);
+		// file_put_contents("data_gabungan.json", $data1);
+	}
 }
 
 $challenge = new ChallengePHP();
@@ -104,6 +128,7 @@ $challenge->get_movie_pop_indo();
 $challenge->get_movie_by_person(6384);
 $challenge->get_movie_by_more_person(3223,1136406);
 $challenge->get_movie_by_year(2016,7.5);
+$challenge->get_data_gabungkan();
 
 
 

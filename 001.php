@@ -21,16 +21,49 @@ class ChallengePHP
 		// 	echo $data."\n";
 		// }
 
-		$html = file_get_html($url, false);
-		$answer = array();
-		if (!empty($html)) 
-		{
-			$divClass = $title = $i = 0;
-			foreach ($html->find('header__title') as $desc) 
-			{
-				$text = html_entity_decode($desc->plaintext);
-				$text = preg_replace('/\&#39;/', "", $text);
-				$answer[$i]['header__title'] = html_entity_decode($text);
+		// $html = file_get_html($url, false);
+		// $answer = array();
+		// if (!empty($html)) 
+		// {
+		// 	$i = 0;
+		// 	foreach ($html->find('col-bs10-10') as $divClass) 
+		// 	{
+		// 		foreach ($divClass->find('header__title') as $title) 
+		// 		{
+		// 			$answer[$i]['judul'] = $title->plaintext;
+		// 		}
+		// 		$i++;
+		// 	}
+		// }
+
+		// print_r($answer);
+		// $items = $html->find('div.container .row');
+		// $title = array();
+		// foreach ($items as $item) 
+		// {
+		// 	$title['title'] = $item->find('h1.header__title');
+		// }
+		// print_r($title);
+		$html = file_get_contents($url); //get the html returned from the following url
+
+		$pokemon_doc = new DOMDocument();
+
+		libxml_use_internal_errors(TRUE); //disable libxml errors
+
+		if(!empty($html)){ //if any html is actually returned
+
+			$pokemon_doc->loadHTML($html);
+			libxml_clear_errors(); //remove errors for yucky html
+			
+			$pokemon_xpath = new DOMXPath($pokemon_doc);
+
+			//get all the h2's with an id
+			$pokemon_row = $pokemon_xpath->query('//h1[@class]');
+
+			if($pokemon_row->length > 0){
+				foreach($pokemon_row as $row){
+					echo $row->nodeValue . "\n";
+				}
 			}
 		}
 	}
@@ -103,6 +136,7 @@ class ChallengePHP
 		$data1 = json_decode($data1, true);
 		$data2 = file_get_contents("https://jsonplaceholder.typicode.com/users");
 		$data2 = json_decode($data2, true);
+		$new_data = array();
 
 		for ($i=0; $i < count($data1); $i++) 
 		{ 
@@ -112,18 +146,25 @@ class ChallengePHP
 				{
 					if ($post["userId"] == $users["id"]) 
 					{
-						print_r($data2[$i]);
+						$post['user'] = $users;
 					}
 				}
+				// print_r($post);
 			}
+			array_push($new_data, $post);
 		}
-		// $data1 = json_encode($data1, JSON_PRETTY_PRINT);
-		// file_put_contents("data_gabungan.json", $data1);
+		$update = json_encode($new_data, JSON_PRETTY_PRINT);
+		file_put_contents("data_gabungan.json", $update);
+		// print_r($new_data);
 	}
 }
 
 $challenge = new ChallengePHP();
-// $challenge->get_headlines("https://regional.kompas.com/read/2018/03/29/07265661/cerita-sripun-dara-asal-semarang-yang-taklukkan-hati-david-beckham-1");
+echo "==============================JUDUL BERITADARI KOMPAS.COM=================================\n";
+$challenge->get_headlines("https://regional.kompas.com/read/2018/03/29/07265661/cerita-sripun-dara-asal-semarang-yang-taklukkan-hati-david-beckham-1");
+$challenge->get_headlines("https://nasional.kompas.com/read/2018/03/29/08514041/aplikator-sepakat-tingkatkan-pendapatan-ojek-online-pengemudi-ngotot-di");
+$challenge->get_headlines("https://lifestyle.kompas.com/read/2018/03/29/063700020/penampilan-modis-istri-kim-jong-un-saat-berkunjung-ke-china");
+$challenge->get_headlines("https://internasional.kompas.com/read/2018/03/29/10534231/rusia-tantang-balik-inggris-untuk-buktikan-tak-terlibat-racuni-skripal");
 $challenge->get_movie_pop_indo();
 $challenge->get_movie_by_person(6384);
 $challenge->get_movie_by_more_person(3223,1136406);

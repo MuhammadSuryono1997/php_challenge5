@@ -14,50 +14,19 @@ class ChallengePHP
 
 	function get_headlines($url)
 	{
-		// $ch = curl_init($url);
-		// $response = curl_exec($ch);
-		// foreach ($response as $data) 
-		// {
-		// 	echo $data."\n";
-		// }
-
-		// $html = file_get_html($url, false);
-		// $answer = array();
-		// if (!empty($html)) 
-		// {
-		// 	$i = 0;
-		// 	foreach ($html->find('col-bs10-10') as $divClass) 
-		// 	{
-		// 		foreach ($divClass->find('header__title') as $title) 
-		// 		{
-		// 			$answer[$i]['judul'] = $title->plaintext;
-		// 		}
-		// 		$i++;
-		// 	}
-		// }
-
-		// print_r($answer);
-		// $items = $html->find('div.container .row');
-		// $title = array();
-		// foreach ($items as $item) 
-		// {
-		// 	$title['title'] = $item->find('h1.header__title');
-		// }
-		// print_r($title);
-		$html = file_get_contents($url); //get the html returned from the following url
+		$html = file_get_contents($url);
 
 		$pokemon_doc = new DOMDocument();
 
-		libxml_use_internal_errors(TRUE); //disable libxml errors
+		libxml_use_internal_errors(TRUE);
 
-		if(!empty($html)){ //if any html is actually returned
+		if(!empty($html)){
 
 			$pokemon_doc->loadHTML($html);
-			libxml_clear_errors(); //remove errors for yucky html
+			libxml_clear_errors();
 			
 			$pokemon_xpath = new DOMXPath($pokemon_doc);
-
-			//get all the h2's with an id
+			
 			$pokemon_row = $pokemon_xpath->query('//h1[@class]');
 
 			if($pokemon_row->length > 0){
@@ -155,7 +124,6 @@ class ChallengePHP
 		}
 		$update = json_encode($new_data, JSON_PRETTY_PRINT);
 		file_put_contents("data_gabungan.json", $update);
-		// print_r($new_data);
 	}
 }
 

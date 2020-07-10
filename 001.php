@@ -16,21 +16,21 @@ class ChallengePHP
 	{
 		$html = file_get_contents($url);
 
-		$pokemon_doc = new DOMDocument();
+		$berita = new DOMDocument();
 
 		libxml_use_internal_errors(TRUE);
 
 		if(!empty($html)){
 
-			$pokemon_doc->loadHTML($html);
+			$berita->loadHTML($html);
 			libxml_clear_errors();
 			
-			$pokemon_xpath = new DOMXPath($pokemon_doc);
-			
-			$pokemon_row = $pokemon_xpath->query('//h1[@class]');
+			$berita_xpath = new DOMXPath($berita);
 
-			if($pokemon_row->length > 0){
-				foreach($pokemon_row as $row){
+			$berita_row = $pberita_xpath->query('//h1[@class]');
+
+			if($berita_row->length > 0){
+				foreach($berita_row as $row){
 					echo $row->nodeValue . "\n";
 				}
 			}

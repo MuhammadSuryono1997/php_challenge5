@@ -3,6 +3,10 @@
  * 
  */
 require_once "simple_dom/simple_html_dom.php";
+require_once "dompdf/autoload.inc.php";
+
+use Dompdf\Dompdf;
+
 class ChallengePHP
 {
 	protected $api_key,$url_movie;
@@ -140,14 +144,59 @@ class ChallengePHP
 
 	function get_film_comingsoon($url)
 	{
-		$html = file_get_html($url);
-		$image = $html->find('a');
-		$link = array();
-		foreach ($image as $a) 
-		{
-			array_push($link, $a->href);
+		$html = file_get_html("https://www.cgv.id/en/loader/home_movie_list");
+		$html = $html->find('a');
+		$link = [];
+		echo "Sedang get data from url ....\n";
+		for ($i=0; $i < count($html); $i++) 
+		{ 
+			$get = str_replace('\\','',$html[$i]->attr['href']);
+			$get = str_replace('"','',$get);
+			$new = "https://www.cgv.id".$get;
+			array_push($link,$new);
 		}
-		print_r(array_slice($link, 20, 25));
+		// var_dump($link[0]);
+		$kumpulan = [];
+		$satu = array();
+		echo "Sedang generate data to pdf..... \n";
+		for($i=0; $i < count($link); $i++)
+		{
+			$awal = file_get_html($link[$i]);
+			$kumpulan['title'] = $awal->find('div.movie-info-title', 0)->plaintext;
+			$kumpulan['sinopsis'] = $awal->find('div.movie-synopsis', 0)->plaintext;
+			$kumpulan['info'] = $awal->find('div.movie-add-info', 0)->plaintext;
+			array_push($satu,$kumpulan);
+		}
+
+		
+		echo "Sedang mengkonversi ke pdf....\n";
+		$this->convert_pdf($satu);
+	}
+
+	public function convert_pdf($data)
+	{
+		$content = '<h3><b>REVIEW FILM COMINGSOON</b></h3><br><br>';
+		foreach ($data as $value) 
+		{
+			$content .= $value['title']."<br>";
+			$content .= "<br>";
+			$content .= $value['info']."<br>";
+			$content .= "<br>";
+			$content .= "<b>Sinopsis</b><br>";
+			$content .= $value['sinopsis']."<br>";
+			$content .= "-----------------------------------------------------------------------------------------------------------------------------<br>";
+			$content .= "<br>";
+		}
+		$dompdf = new Dompdf();
+		$dompdf->load_html($content);
+		$dompdf->setPaper('A4','portrait');
+		$dompdf->render();
+		// $dompdf->stream("film.pdf",0);
+		$output = $dompdf->output();
+		if(file_put_contents('film.pdf',$output))
+		{
+			echo "Data berhasil dikonversi ke PDF dengan nama file film.pdf";
+		}
 	}
 }
 
@@ -166,7 +215,7 @@ echo "Sedang memuat..........\n";
 $challenge->get_movie_by_year(2016,7.5);
 echo "Sedang mengunggah ke file json...........\n";
 $challenge->get_data_gabungkan();
-// $challenge->get_film_comingsoon("https://www.cgv.id/en/movies/info/20007200/2020-12-31");
+$challenge->get_film_comingsoon("https://www.cgv.id/en/movies/now_playing");
 
 
 

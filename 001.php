@@ -27,13 +27,23 @@ class ChallengePHP
 			
 			$berita_xpath = new DOMXPath($berita);
 
-			$berita_row = $pberita_xpath->query('//h1[@class]');
+			$berita_row = $berita_xpath->query('//h3[contains(@class, "article__title article__title--medium")]');
 
 			if($berita_row->length > 0){
 				foreach($berita_row as $row){
-					echo $row->nodeValue . "\n";
+					echo "[TITLE]: ".$row->nodeValue . "\n";
+					// echo "[URL]: ".$row->firstChild->attributes."\n";
+					foreach ($row->firstChild->attributes as $op) 
+					{
+						if ($op->name == 'href') 
+						{
+							echo "[URL]: ".$op->value."\n";
+						}
+					}
+
 				}
 			}
+
 		}
 	}
 
@@ -129,15 +139,12 @@ class ChallengePHP
 
 $challenge = new ChallengePHP();
 echo "==============================JUDUL BERITADARI KOMPAS.COM=================================\n";
-$challenge->get_headlines("https://regional.kompas.com/read/2018/03/29/07265661/cerita-sripun-dara-asal-semarang-yang-taklukkan-hati-david-beckham-1");
-$challenge->get_headlines("https://nasional.kompas.com/read/2018/03/29/08514041/aplikator-sepakat-tingkatkan-pendapatan-ojek-online-pengemudi-ngotot-di");
-$challenge->get_headlines("https://lifestyle.kompas.com/read/2018/03/29/063700020/penampilan-modis-istri-kim-jong-un-saat-berkunjung-ke-china");
-$challenge->get_headlines("https://internasional.kompas.com/read/2018/03/29/10534231/rusia-tantang-balik-inggris-untuk-buktikan-tak-terlibat-racuni-skripal");
-$challenge->get_movie_pop_indo();
-$challenge->get_movie_by_person(6384);
-$challenge->get_movie_by_more_person(3223,1136406);
-$challenge->get_movie_by_year(2016,7.5);
-$challenge->get_data_gabungkan();
+$challenge->get_headlines("https://www.kompas.com/");
+// $challenge->get_movie_pop_indo();
+// $challenge->get_movie_by_person(6384);
+// $challenge->get_movie_by_more_person(3223,1136406);
+// $challenge->get_movie_by_year(2016,7.5);
+// $challenge->get_data_gabungkan();
 
 
 

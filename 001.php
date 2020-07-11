@@ -52,7 +52,6 @@ class ChallengePHP
 		$ch = file_get_contents($this->url_movie."discover/movie?api_key=".$this->api_key."&language=id-ID&region=ID&sort_by=popularity.asc&page=2&include_adult=true&include_video=false");
 		$response = json_decode($ch,true)['results'];
 		$urutan = 1;
-		echo "=========== FILM INDONESIA ============\n";
 		for ($i=0; $i < 10 ; $i++) 
 		{ 
 			echo $urutan++.". ".$response[$i]['title'].".\n";
@@ -133,57 +132,41 @@ class ChallengePHP
 			array_push($new_data, $post);
 		}
 		$update = json_encode($new_data, JSON_PRETTY_PRINT);
-		file_put_contents("data_gabungan.json", $update);
+		if(file_put_contents("data_gabungan.json", $update))
+		{
+			echo "Data berhasil diunggah!\n";
+		}
 	}
 
 	function get_film_comingsoon($url)
 	{
-		$html = file_get_contents($url);
-
-		$berita = new DOMDocument();
-
-		libxml_use_internal_errors(TRUE);
-
-		if(!empty($html)){
-
-			$berita->loadHTML($html);
-			libxml_clear_errors();
-			
-			$berita_xpath = new DOMXPath($berita);
-
-			$berita_row = $berita_xpath->query('//div[contains(@class, "comingsoon-movie-list-body")]');
-
-			if($berita_row->length > 0){
-				foreach($berita_row as $row){
-					// }
-					print_r($row->nextSibling->previousSibling);
-
-					foreach ($row->nextSibling->previousSibling->attributes as $a) 
-					{
-						if ($a->name == "class") 
-						{
-							foreach ($a->childNodes as $value) {
-								print_r($value);
-							}
-						}
-					}
-
-				}
-			}
-
+		$html = file_get_html($url);
+		$image = $html->find('a');
+		$link = array();
+		foreach ($image as $a) 
+		{
+			array_push($link, $a->href);
 		}
+		print_r(array_slice($link, 20, 25));
 	}
 }
 
 $challenge = new ChallengePHP();
-// echo "==============================JUDUL BERITADARI KOMPAS.COM=================================\n";
-// $challenge->get_headlines("https://www.kompas.com/");
-// $challenge->get_movie_pop_indo();
-// $challenge->get_movie_by_person(6384);
-// $challenge->get_movie_by_more_person(3223,1136406);
-// $challenge->get_movie_by_year(2016,7.5);
-// $challenge->get_data_gabungkan();
-$challenge->get_film_comingsoon("https://www.cgv.id/en/movies/now_playing");
+echo "==============================JUDUL BERITADARI KOMPAS.COM=================================\n";
+echo "Sedang memuat..........\n";
+$challenge->get_headlines("https://www.kompas.com/");
+echo "=========== FILM INDONESIA ============\n";
+echo "Sedang memuat..........\n";
+$challenge->get_movie_pop_indo();
+echo "Sedang memuat..........\n";
+$challenge->get_movie_by_person(6384);
+echo "Sedang memuat..........\n";
+$challenge->get_movie_by_more_person(3223,1136406);
+echo "Sedang memuat..........\n";
+$challenge->get_movie_by_year(2016,7.5);
+echo "Sedang mengunggah ke file json...........\n";
+$challenge->get_data_gabungkan();
+// $challenge->get_film_comingsoon("https://www.cgv.id/en/movies/info/20007200/2020-12-31");
 
 
 

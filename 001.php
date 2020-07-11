@@ -135,16 +135,55 @@ class ChallengePHP
 		$update = json_encode($new_data, JSON_PRETTY_PRINT);
 		file_put_contents("data_gabungan.json", $update);
 	}
+
+	function get_film_comingsoon($url)
+	{
+		$html = file_get_contents($url);
+
+		$berita = new DOMDocument();
+
+		libxml_use_internal_errors(TRUE);
+
+		if(!empty($html)){
+
+			$berita->loadHTML($html);
+			libxml_clear_errors();
+			
+			$berita_xpath = new DOMXPath($berita);
+
+			$berita_row = $berita_xpath->query('//div[contains(@class, "comingsoon-movie-list-body")]');
+
+			if($berita_row->length > 0){
+				foreach($berita_row as $row){
+					// }
+					print_r($row->nextSibling->previousSibling);
+
+					foreach ($row->nextSibling->previousSibling->attributes as $a) 
+					{
+						if ($a->name == "class") 
+						{
+							foreach ($a->childNodes as $value) {
+								print_r($value);
+							}
+						}
+					}
+
+				}
+			}
+
+		}
+	}
 }
 
 $challenge = new ChallengePHP();
-echo "==============================JUDUL BERITADARI KOMPAS.COM=================================\n";
-$challenge->get_headlines("https://www.kompas.com/");
+// echo "==============================JUDUL BERITADARI KOMPAS.COM=================================\n";
+// $challenge->get_headlines("https://www.kompas.com/");
 // $challenge->get_movie_pop_indo();
 // $challenge->get_movie_by_person(6384);
 // $challenge->get_movie_by_more_person(3223,1136406);
 // $challenge->get_movie_by_year(2016,7.5);
 // $challenge->get_data_gabungkan();
+$challenge->get_film_comingsoon("https://www.cgv.id/en/movies/now_playing");
 
 
 

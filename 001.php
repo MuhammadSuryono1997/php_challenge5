@@ -116,8 +116,8 @@ class ChallengePHP
 		$data2 = json_decode($data2, true);
 		$new_data = array();
 
-		for ($i=0; $i < count($data1); $i++) 
-		{ 
+		// for ($i=0; $i < count($data1); $i++) 
+		// { 
 			foreach ($data1 as $post) 
 			{
 				foreach ($data2 as $users) 
@@ -127,10 +127,10 @@ class ChallengePHP
 						$post['user'] = $users;
 					}
 				}
-				// print_r($post);
+				
+				array_push($new_data, $post);
 			}
-			array_push($new_data, $post);
-		}
+		// }
 		$update = json_encode($new_data, JSON_PRETTY_PRINT);
 		if(file_put_contents("data_gabungan.json", $update))
 		{
